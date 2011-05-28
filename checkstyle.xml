@@ -74,6 +74,20 @@
        <property name="message" value="Line has trailing spaces."/>
     </module>
 
+    <!-- Checks for Headers                                -->
+    <!-- See http://checkstyle.sf.net/config_header.html   -->
+    <module name="Header">
+        <!-- The follow property value demonstrates the ability     -->
+        <!-- to have access to ANT properties. In this case it uses -->
+        <!-- the ${basedir} property to allow Checkstyle to be run  -->
+        <!-- from any directory within a project. See property      -->
+        <!-- expansion,                                             -->
+        <!-- http://checkstyle.sf.net/config.html#properties        -->
+        <property
+            name="headerFile"
+            value="${basedir}/java.header"/>
+    </module>
+
     <module name="TreeWalker">
 
         <!-- Checks for Javadoc comments.                     -->
@@ -97,19 +111,6 @@
         <module name="TypeName"/>
 
 
-        <!-- Checks for Headers                                -->
-        <!-- See http://checkstyle.sf.net/config_header.html   -->
-        <!-- <module name="Header">                            -->
-            <!-- The follow property value demonstrates the ability     -->
-            <!-- to have access to ANT properties. In this case it uses -->
-            <!-- the ${basedir} property to allow Checkstyle to be run  -->
-            <!-- from any directory within a project. See property      -->
-            <!-- expansion,                                             -->
-            <!-- http://checkstyle.sf.net/config.html#properties        -->
-            <!-- <property                                              -->
-            <!--     name="headerFile"                                  -->
-            <!--     value="${basedir}/java.header"/>                   -->
-        <!-- </module> -->
 
         <!-- Following interprets the header file as regular expressions. -->
         <!-- <module name="RegexpHeader"/>                                -->
@@ -118,9 +119,15 @@
         <!-- Checks for imports                              -->
         <!-- See http://checkstyle.sf.net/config_import.html -->
         <module name="AvoidStarImport"/>
+        <module name="AvoidStaticImport"/>
         <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
+        <module name="ImportOrder">
+          <property name="groups"
+            value="/^java\./,/^javax\./,/^org\./,/^com\.frdna\./"/>
+          <property name="separated" value="true" />
+        </module>
 
 
         <!-- Checks for Size Violations.                    -->
@@ -145,6 +152,7 @@
         <module name="TypecastParenPad"/>
         <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround"/>
+        <module name="RequireThis"/>
 
 
         <!-- Modifier Checks                                    -->
@@ -173,6 +181,7 @@
         <module name="InnerAssignment"/>
         <!-- module name="MagicNumber"/ -->
         <module name="MissingSwitchDefault"/>
+        <module name="DefaultComesLast"/>
         <!--
         <module name="RedundantThrows"/>
         -->
@@ -198,6 +207,7 @@
         -->
         <module name="UpperEll"/>
 
+        <module name="DeclarationOrder" />
     </module>
 
 </module>
