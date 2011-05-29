@@ -21,12 +21,6 @@
  */
 package com.frdna.loginator.jdk;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -48,7 +42,7 @@ public class JdkLogger extends AbstractLogger {
 
     public static boolean initialize(String configFile) {
 
-        InputStream inputStream = JdkLogger.configInputStream(configFile);
+        InputStream inputStream = Io.openInputStream(configFile);
 
         if (inputStream == null) {
             return false;
@@ -59,6 +53,8 @@ public class JdkLogger extends AbstractLogger {
         } catch (Exception e) {
             throw new LoginatorException(
                     "Unable to configure JdkLogger from " + configFile, e);
+        } finally {
+            Io.close(inputStream);
         }
 
         return true;
@@ -109,35 +105,5 @@ public class JdkLogger extends AbstractLogger {
             default:
                 throw new LoginatorException("Unhandled log level " + level);
         }
-    }
-
-    private static InputStream configInputStream(String configFile) {
-
-        InputStream inputStream =
-            JdkLogger.class.getClassLoader().getResourceAsStream(configFile);
-
-        if (inputStream != null) {
-            return inputStream;
-        }
-
-        try {
-            URL configUrl = new URL(configFile);
-            return configUrl.openStream();
-        } catch (MalformedURLException e) {
-            // Ignore, the config file string is not a valid URL
-        } catch (IOException e) {
-            // The config file was a valid URL but it could not be read
-            throw new LoginatorException(
-                    "Unable to read configuration from URL " + configFile, e);
-        }
-
-        try {
-            return new FileInputStream(configFile);
-        } catch (FileNotFoundException e) {
-            // Ignore
-        }
-
-        throw new LoginatorException(
-                "Unable to find configuration file " + configFile);
     }
 }
