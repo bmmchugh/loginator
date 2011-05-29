@@ -19,31 +19,37 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.frdna.loginator.jdk;
+package com.frdna.loginator.log4j;
 
 import java.io.InputStream;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import java.util.Properties;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import com.frdna.loginator.AbstractLogger;
 import com.frdna.loginator.Io;
 import com.frdna.loginator.LoginatorException;
 
-public class JdkLogger extends AbstractLogger {
+public class Log4jLogger extends AbstractLogger {
 
     public static boolean initialize() {
-        String configFile = System.getProperty(
-                "com.frdna.loginator.jdkLogger.configFile");
-        if (configFile != null) {
-            return JdkLogger.initialize(configFile);
+        if (Log4jLogger.class.getClassLoader().getResource("log4j.properties")
+                != null) {
+            return true;
         }
 
-        // Use default configuration
-        return true;
+        String configFile = System.getProperty(
+                "com.frdna.loginator.log4jLogger.configFile");
+        if (configFile != null) {
+            return Log4jLogger.initialize(configFile);
+        }
+
+        return false;
     }
 
     public static boolean initialize(String configFile) {
-
         InputStream inputStream = Io.openInputStream(configFile);
 
         if (inputStream == null) {
@@ -51,10 +57,11 @@ public class JdkLogger extends AbstractLogger {
         }
 
         try {
-            LogManager.getLogManager().readConfiguration(inputStream);
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            PropertyConfigurator.configure(properties);
         } catch (Exception e) {
-            throw new LoginatorException(
-                    "Unable to configure JdkLogger from " + configFile, e);
+            throw new LoginatorException("Unable configure Log4J ", e);
         } finally {
             Io.close(inputStream);
         }
@@ -63,47 +70,39 @@ public class JdkLogger extends AbstractLogger {
     }
 
     protected boolean isLevelEnabled(Class<?> source, Level level) {
-        return this.getLogger(source).isLoggable(
-                this.getJdkLevel(level));
+        return this.getLogger(source).isEnabledFor(
+                this.getLog4jLevel(level));
     }
 
     protected void log(
-            Level level,
-            Class<?> source,
-            Throwable cause,
-            String message) {
+        Level level,
+        Class<?> source,
+        Throwable cause,
+        String message) {
 
-        Logger jdkLogger = this.getLogger(source);
-        java.util.logging.Level jdkLevel   = this.getJdkLevel(level);
+        Logger log4jLogger = this.getLogger(source);
+        org.apache.log4j.Level log4jLevel = this.getLog4jLevel(level);
 
-        if (cause == null) {
-            jdkLogger.log(jdkLevel, message);
-        } else {
-            jdkLogger.log(jdkLevel, message, cause);
-        }
+        log4jLogger.log(log4jLevel, message, cause);
     }
 
     private Logger getLogger(Class<?> source) {
-        return this.getLogger(source.getName());
+        return Logger.getLogger(source);
     }
 
-    private Logger getLogger(String name) {
-        return Logger.getLogger(name);
-    }
-
-    private java.util.logging.Level getJdkLevel(Level level) {
+    private org.apache.log4j.Level getLog4jLevel(Level level) {
 
         switch (level) {
             case TRACE:
-                return java.util.logging.Level.FINER;
+                return org.apache.log4j.Level.TRACE;
             case DEBUG:
-                return java.util.logging.Level.FINE;
+                return org.apache.log4j.Level.DEBUG;
             case INFO:
-                return java.util.logging.Level.INFO;
+                return org.apache.log4j.Level.INFO;
             case WARN:
-                return java.util.logging.Level.WARNING;
+                return org.apache.log4j.Level.WARN;
             case ERROR:
-                return java.util.logging.Level.SEVERE;
+                return org.apache.log4j.Level.ERROR;
             default:
                 throw new LoginatorException("Unhandled log level " + level);
         }

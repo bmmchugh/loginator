@@ -21,7 +21,7 @@
  */
 package com.frdna.loginator;
 
-import java.io.Closable;
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -63,13 +63,13 @@ public final class Io {
                 "Unable to find configuration file " + location);
     }
 
-    public static void close(Closable closable) {
-        if (closable == null) {
+    public static void close(Closeable closeable) {
+        if (closeable == null) {
             return;
         }
 
         try {
-            closable.close();
+            closeable.close();
         } catch (IOException e) {
             // Ignore
         }

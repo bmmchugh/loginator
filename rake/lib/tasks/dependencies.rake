@@ -4,10 +4,12 @@ task :dependencies => [ 'dependencies:default' ]
 
 namespace :dependencies do
 
-  task :default => [ :junit, :checkstyle ]
+  task :default => [ :junit, :checkstyle, :log4j ]
 
+  LIB_PATH = File.join(ROOT_PATH, 'lib')
   TEST_LIB_PATH = File.join(ROOT_PATH, 'test', 'lib')
   
+  directory LIB_PATH
   directory TEST_LIB_PATH
 
   task :junit => TEST_LIB_PATH do
@@ -43,6 +45,26 @@ namespace :dependencies do
         download_url,
         '|',
         "tar Oxf - checkstyle-5.3/#{versioned_jar}",
+        '>',
+        versioned_jar_file ]
+      sh command.join(' ')
+    end
+  end
+
+  task :log4j => LIB_PATH do
+    versioned_jar = 'log4j-1.2.16.jar'
+    versioned_jar_file = File.join(LIB_PATH, versioned_jar)
+    unless File.exist?(versioned_jar_file)
+      FileList[File.join(LIB_PATH, 'log4j*.jar')].each do |f|
+        rm f
+      end
+      download_url = 'http://apache.mirrors.pair.com'
+      download_url << '/logging/log4j/1.2.16/apache-log4j-1.2.16.tar.gz'
+      command = [ 'curl',
+        '--location',
+        download_url,
+        '|',
+        "tar Oxf - apache-log4j-1.2.16/#{versioned_jar}",
         '>',
         versioned_jar_file ]
       sh command.join(' ')

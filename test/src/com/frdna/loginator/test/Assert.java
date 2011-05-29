@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import org.apache.log4j.spi.LoggingEvent;
+
 /**
  * Custom assertions.
  */
@@ -43,6 +45,18 @@ public class Assert extends org.junit.Assert {
             LogRecord logRecord) {
         Assert.assertEquals(expectedLevel, logRecord.getLevel());
         Assert.assertEquals(expectedMessage, logRecord.getMessage());
+    }
+
+    /**
+     * Assert a <code>LoggingEvent</code> has the correct message and
+     * <code>org.apache.log4j.Level</code>.
+     */
+    public static void assertLoggingEvent(
+            org.apache.log4j.Level expectedLevel,
+            String expectedMessage,
+            LoggingEvent loggingEvent) {
+        Assert.assertEquals(expectedLevel, loggingEvent.getLevel());
+        Assert.assertEquals(expectedMessage, loggingEvent.getMessage());
     }
 
     /**
