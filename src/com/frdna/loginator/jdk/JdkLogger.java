@@ -32,8 +32,7 @@ import com.frdna.loginator.LoginatorException;
 public class JdkLogger extends AbstractLogger {
 
     public static boolean initialize() {
-        String configFile = System.getProperty(
-                "com.frdna.loginator.jdkLogger.configFile");
+        String configFile = System.getProperty("loginator.jdk.configuration");
         if (configFile != null) {
             return JdkLogger.initialize(configFile);
         }

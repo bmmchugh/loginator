@@ -40,8 +40,15 @@ public class Log4jLogger extends AbstractLogger {
             return true;
         }
 
-        String configFile = System.getProperty(
-                "com.frdna.loginator.log4jLogger.configFile");
+        if (System.getProperty("log4j.configuration") != null) {
+            return true;
+        }
+
+        if (System.getProperty("log4j.configurationClass") != null) {
+            return true;
+        }
+
+        String configFile = System.getProperty("loginator.log4j.configuration");
         if (configFile != null) {
             return Log4jLogger.initialize(configFile);
         }
