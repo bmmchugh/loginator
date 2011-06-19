@@ -23,6 +23,7 @@ package com.frdna.loginator;
 
 import com.frdna.loginator.dummy.DummyLogger;
 import com.frdna.loginator.jdk.JdkLogger;
+import com.frdna.loginator.log4j.Log4jLogger;
 
 public class Log {
 
@@ -32,7 +33,9 @@ public class Log {
 
         try {
 
-            if (JdkLogger.initialize()) {
+            if (Log4jLogger.initialize()) {
+                Log.logger = new Log4jLogger();
+            } else if (JdkLogger.initialize()) {
                 Log.logger = new JdkLogger();
             }
 
